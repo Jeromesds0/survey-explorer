@@ -21,11 +21,13 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-pythonpath = ["."]
+pythonpath = [".", "frontend"]
 testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 100
+# Streamlit runs frontend/app.py with frontend/ on the import path
+src = [".", "frontend"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
