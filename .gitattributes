@@ -1,0 +1,4 @@
+* text=auto
+
+# Raw data is kept byte-for-byte as delivered (no line ending conversion)
+data/raw/** -text
