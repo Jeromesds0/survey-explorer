@@ -5,6 +5,9 @@ Source: `data/raw/tech_test_survey_data.csv` (sha256 `d54aff6d...0833fda6`)
 First pass over the raw file before writing any pipeline code. The aim was to understand the
 structure and find anything that would make naive analysis wrong.
 
+Counts below are from the raw file, before duplicates are removed. The pipeline's data quality
+log records the counts after cleaning.
+
 ## Shape
 
 - 1,499 data rows, 41 columns, UTF-8, CRLF line endings
