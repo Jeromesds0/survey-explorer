@@ -53,6 +53,27 @@ There is no weighting variable and no interview date.
 ## Minor inconsistencies (left as-is)
 
 - 2 respondents say they have never worked but are currently working full or part time
-- 2 respondents under 50 describe themselves as retired
+- 5 respondents say they have never worked but have done manual labour (1 has also been made
+  redundant)
+- 2 respondents are "retired on a state pension only" at ages 44 and 55, well below state
+  pension age
 
 Too few to change any result, and there is no safe way to correct them. Logged as warnings.
+
+## Second pass: response quality and sanity checks
+
+- **Straightlining.** 38 respondents gave the same answer to all 11 attitude statements: 23 all
+  "Don't know", 9 all "Neither", and 6 agreeing or disagreeing with everything, even though
+  some statements pull in opposite directions. A common sign of low-effort answering. Kept in
+  the data (removing respondents is a judgement for the research team) but flagged in the
+  data quality log with their IDs.
+- **The duplicates didn't overwrite anyone.** The file is sorted by serial number, and the 31
+  extra copies of respondent 200 sit between 198 and 202 with normal spacing either side, so
+  they were added rather than replacing other respondents. No two different IDs have identical
+  answers.
+- **No fieldwork date.** 1 respondent aged 19 and 5 aged 20 report an EU referendum vote. Whether
+  that's possible depends on when the survey ran, which isn't in the file. Worth asking the
+  provider.
+- **The sample looks sensible.** Among respondents who voted in the EU referendum, 50.5% voted
+  Leave against the actual result of 51.9%. Women (53%) and London (15%) are slightly
+  over-represented, which weighting would correct.

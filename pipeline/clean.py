@@ -211,6 +211,7 @@ def check_consistency(df: pd.DataFrame, log: QualityLog) -> None:
     high = df["age_band"].map(lambda b: AGE_BANDS[b][1])
     statements = [c for c in df.columns if c.startswith("stmt_") and c != "stmt_none"]
     working = df["work_status"].str.startswith("Working")
+    never_worked = df["employer_type"] == "Have never worked"
 
     # rule -> rows that break it
     rules = {
@@ -221,8 +222,14 @@ def check_consistency(df: pd.DataFrame, log: QualityLog) -> None:
         & (df["region"] != "Wales"),
         "'None of these' is never ticked alongside a statement": (df["stmt_none"] == "Yes")
         & df[statements].eq("Yes").any(axis=1),
-        "People currently working don't say they have never worked": working
-        & (df["employer_type"] == "Have never worked"),
+        "People currently working don't say they have never worked": working & never_worked,
+        "People who have never worked haven't done manual labour or been made redundant": (
+            never_worked
+            & (df["stmt_manual_labour"].eq("Yes") | df["stmt_made_redundant"].eq("Yes"))
+        ),
+        "People retired on a state pension only are 60 or over": (
+            (df["work_status"] == "Retired on a state pension only") & (df["age"] < 60)
+        ),
     }
     for rule, broken in rules.items():
         n = int(broken.sum())
@@ -231,6 +238,29 @@ def check_consistency(df: pd.DataFrame, log: QualityLog) -> None:
             log.add("consistency", "warning", n, f"{rule}: {n} exceptions (respondent IDs: {ids})")
         else:
             log.add("consistency", "passed", 0, rule)
+
+
+def check_straightlining(df: pd.DataFrame, log: QualityLog) -> None:
+    """Respondents giving the same answer to every attitude statement.
+
+    A common sign of low-effort answering, especially as some statements pull in opposite
+    directions. Kept in the data, flagged for analysts to judge.
+    """
+    attitudes = [q.id for q in codebook.QUESTIONS if q.kind == "agree_scale"]
+    same = df[attitudes].nunique(axis=1) == 1
+    n = int(same.sum())
+    if not n:
+        log.add("response quality", "passed", 0, "Nobody gave the same answer to every attitude")
+        return
+    answers = df.loc[same, attitudes[0]].value_counts().to_dict()
+    ids = sorted(df.loc[same, "respondent_id"])
+    log.add(
+        "response quality",
+        "warning",
+        n,
+        f"{n} respondents gave the same answer to all {len(attitudes)} attitude statements "
+        f"({answers}). Possible low-effort answers; kept, not removed (respondent IDs: {ids})",
+    )
 
 
 def clean_survey(raw: pd.DataFrame) -> tuple[pd.DataFrame, QualityLog]:
@@ -247,6 +277,7 @@ def clean_survey(raw: pd.DataFrame) -> tuple[pd.DataFrame, QualityLog]:
     df = cast_types(df, log)
     df = add_derived_columns(df, log)
     check_consistency(df, log)
+    check_straightlining(df, log)
 
     column_order = [q.id for q in codebook.QUESTIONS]
     return df[column_order], log

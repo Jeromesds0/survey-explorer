@@ -334,7 +334,10 @@ def quality_page() -> None:
         "- **Public sector area** was only asked of public sector and nationalised industry "
         "employees, so its base is smaller.\n"
         "- **'I own more than one property'** is missing for about 60% of respondents, in "
-        "blocks of serial numbers. Treat it with caution."
+        "blocks of serial numbers. Treat it with caution.\n"
+        "- **38 respondents gave the same answer to every attitude statement** (mostly "
+        "'Don't know'), which suggests low-effort answering. They're kept in, and their IDs "
+        "are in the table above if you want to exclude them."
     )
 
 

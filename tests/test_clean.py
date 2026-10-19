@@ -16,6 +16,9 @@ def make_raw(*rows: dict) -> pd.DataFrame:
     for i, overrides in enumerate(rows, start=1):
         answers = {q.id: q.options[0] for q in codebook.QUESTIONS if q.source and q.options}
         answers |= {q.id: "No" for q in codebook.QUESTIONS if q.kind == "yes_no"}
+        # Varied attitude answers, so a default row isn't flagged as straightlining
+        attitudes = [q for q in codebook.QUESTIONS if q.kind == "agree_scale"]
+        answers |= {q.id: q.options[n % 5] for n, q in enumerate(attitudes)}
         answers |= {
             "respondent_id": str(i),
             "age": "21",
@@ -129,6 +132,26 @@ def test_inconsistent_answers_are_logged_not_changed():
 
     assert df.loc[0, "age_band"] == "65+"
     assert "warning" in statuses(log, "consistency")
+
+
+def test_state_pension_below_60_is_logged():
+    _, log = clean_survey(
+        make_raw(
+            {"work_status": "Retired on a state pension only", "age_band": "35-44", "age": "44"}
+        )
+    )
+
+    assert "warning" in statuses(log, "consistency")
+
+
+def test_same_answer_to_every_attitude_is_flagged_not_removed():
+    all_dont_know = {q.id: "Don't know" for q in codebook.QUESTIONS if q.kind == "agree_scale"}
+    df, log = clean_survey(make_raw(all_dont_know, {}))
+
+    assert len(df) == 2
+    assert statuses(log, "response quality") == ["warning"]
+    warning = next(c for c in log.checks if c.step == "response quality")
+    assert warning.rows_affected == 1
 
 
 def test_raw_file_end_to_end():
