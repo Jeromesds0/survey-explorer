@@ -5,7 +5,9 @@ import os
 import httpx
 import streamlit as st
 
-API_URL = os.environ.get("SURVEY_API_URL", "http://localhost:8000")
+# 127.0.0.1 rather than localhost: on Windows, "localhost" tries IPv6 first and every request
+# waited ~2 seconds before falling back to the API's IPv4 address
+API_URL = os.environ.get("SURVEY_API_URL", "http://127.0.0.1:8000")
 CACHE_SECONDS = 600
 
 

@@ -24,6 +24,10 @@ FILTER_QUESTIONS = [
 
 st.set_page_config(page_title="Survey Explorer", page_icon="📊", layout="wide")
 
+# Charts with many columns can be wider than the page on small screens: scroll them sideways
+# instead of letting them run off the edge
+st.html("<style>div:has(> [data-testid='stVegaLiteChart']) { overflow-x: auto; }</style>")
+
 try:
     questions = {q["id"]: q for q in api_client.questions()}
 except api_client.ApiError as exc:

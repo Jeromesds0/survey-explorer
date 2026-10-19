@@ -363,8 +363,6 @@ DROPPED_COLUMNS = {
     STATEMENTS + "dont_know": "Answer is 'No' for every respondent, so it carries no information",
 }
 
-BY_ID = {q.id: q for q in QUESTIONS}
-
 
 def source_columns() -> dict[str, str]:
     """Raw column name -> short id, for every question that comes from the raw file."""

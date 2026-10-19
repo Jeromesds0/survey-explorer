@@ -18,7 +18,8 @@ import httpx
 from pipeline.build import main as build_warehouse
 
 ROOT = Path(__file__).parent
-API_URL = "http://localhost:8000"
+# 127.0.0.1 for the API: "localhost" can add ~2 seconds per request on Windows (IPv6 first)
+API_URL = "http://127.0.0.1:8000"
 UI_URL = "http://localhost:8501"
 
 
