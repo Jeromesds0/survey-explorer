@@ -1,0 +1,12 @@
+[server]
+# No first-run email prompt in the terminal; start.py opens the browser itself
+headless = true
+# Only reachable from this machine. The app shows respondent-level data
+address = "localhost"
+
+[browser]
+gatherUsageStats = false
+
+[client]
+# Hide Streamlit's developer menu (Deploy, Rerun etc.) from analysts
+toolbarMode = "minimal"
